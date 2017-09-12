@@ -1,32 +1,29 @@
 _ = require 'lodash'
-rest = require '../index'
+{token, verify, validToken, authApi, model} = require '../index'
 config = require './config.coffee'
 {async, await} = require 'asyncawait'
 
 describe 'stamp', ->
-  token = null
-  getToken = async ->
-    await rest.token config.oauth2
+  opts = _.extend config.oauth2, getToken: async ->
+    await token opts
 
   it 'token', async ->
-    token = await rest.token config.oauth2
+    await opts.getToken()
 
   it 'verify', async ->
-    opts = _.extend token: token, _.pick(config.oauth2, 'url', 'scope')
-    await rest.verify opts
+    await verify _.extend token: await(opts.getToken()), _.pick(opts, 'url', 'scope')
     
   it 'validToken', async ->
-    token = null
-    token = await rest.validToken _.extend getToken: getToken, config.oauth2
+    await validToken opts
 
   it 'authApi', async ->
-    rest.authApi async ->
-      await rest.validToken _.extend getToken: getToken, config.oauth2
+    authApi async ->
+      await validToken opts
 
   it 'proxy', async ->
-    Proxy = rest.model config.proxy.url
-    Proxy.use rest.authApi async ->
-      await rest.validToken _.extend getToken: getToken, config.oauth2
+    Proxy = model config.proxy.url
+      .use authApi async ->
+        await validToken opts
     proxy = new Proxy
       name: 'test'
       prefix: '/test/'

@@ -202,6 +202,7 @@ baseUrl: base url to access REST API
 
           use: (api) ->
             @api = api
+            @
 
 - static method to generate url based on input id
 

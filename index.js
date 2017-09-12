@@ -179,7 +179,8 @@
       baseUrl: baseUrl,
       api: module.exports.api(),
       use: function(api) {
-        return this.api = api;
+        this.api = api;
+        return this;
       },
       url: function(id) {
         var path, ret, url;
