@@ -17,16 +17,16 @@ describe 'stamp', ->
     
   it 'validToken', async ->
     token = null
-    token = await rest.validToken getToken, config.oauth2
+    token = await rest.validToken _.extend getToken: getToken, config.oauth2
 
   it 'authApi', async ->
     rest.authApi async ->
-      await rest.validToken getToken, config.oauth2
+      await rest.validToken _.extend getToken: getToken, config.oauth2
 
   it 'proxy', async ->
     Proxy = rest.model config.proxy.url
     Proxy.use rest.authApi async ->
-      await rest.validToken getToken, config.oauth2
+      await rest.validToken _.extend getToken: getToken, config.oauth2
     proxy = new Proxy
       name: 'test'
       prefix: '/test/'
