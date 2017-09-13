@@ -1,4 +1,5 @@
     _ = require 'lodash'
+    assert = require 'assert'
     {async, await} = require 'asyncawait'
     Promise = require 'bluebird'
     stampit = require 'stampit'
@@ -37,9 +38,8 @@ opts:
       else
         data =
           grant_type: 'client_credentials'
-      {body} = await module.exports.api().post url.token, data, opts
-      if body.error?
-        throw new Error body.error
+      {statusCode, statusMessage, body} = await module.exports.api().post url.token, data, opts
+      assert statusCode == 200 and not body.error?, "#{statusMessage}: #{body}"
       body.access_token
 
 verify token with input url
@@ -54,19 +54,16 @@ opts:
   token: token to be verified
 ```
 
-    module.exports.verify = (opts) ->
+    module.exports.verify = async (opts) ->
       {url, scope, token} = opts
       opts =
         headers:
           Authorization: "Bearer #{token}"
-      res = await module.exports.api().get url.verify, null, opts
-      if res.statusCode != 200
-        throw new Error res.body
-      authScope = res.body.scope.split ' '
-      result = _.intersection scope, authScope 
-      if result.length != scope.length
-        throw new Error "Unauthorizated access to #{scope}"
-      res.body 
+      {statusCode, statusMessage, body} = await module.exports.api().get(url.verify, null, opts)
+      assert statusCode == 200, "#{statusMessage}: #{body}"
+      result = _.intersection scope, body.scope.split(' ')
+      assert result.length == scope.length, "Unauthorizated access to #{scope}"
+      body 
 
 async function to acquire token even if expired
 ```
@@ -133,7 +130,7 @@ getToken: async function to acquire token
           post: async (url, data) ->
             await api.post url, data, await opts()
           'delete': async (url) ->
-            await api.delele url, null, await opts()
+            await api.delete url, null, await opts()
 
 function to return [ActiveRecord](https://bfanger.nl/angular-activerecord/api/#!/api/ActiveRecord) like class for REST API access
 ```
@@ -167,6 +164,7 @@ baseUrl: base url to access REST API
 
           fetch: async ->
             res = await stamp.api.get stamp.url(@[@getStamp().idAttribute])
+            assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
             _.extend @, @parse res
 
 - save object instance and input values to server via REST API
@@ -175,14 +173,19 @@ baseUrl: base url to access REST API
             _.extend @, values
             if @isNew()
               res = await stamp.api.post stamp.url(), @
+              assert res.statusCode == 201, "#{res.statusMessage}: #{res.body}"
+              _.extend @, @parse res.body
             else
               res = await stamp.api.put stamp.url(@[@getStamp().idAttribute]), @
-            _.extend @, @parse res
+              assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
+              _.extend @, @parse res.body
 
 - delete object instance from server via REST API
 
           destroy: ->
-            await stamp.api.delete stamp.url(@[@getStamp().idAttribute])
+            res = await stamp.api.delete stamp.url(@[@getStamp().idAttribute])
+            assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
+            @
 
         .statics
 

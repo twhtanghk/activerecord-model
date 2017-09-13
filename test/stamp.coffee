@@ -4,6 +4,7 @@ config = require './config.coffee'
 {async, await} = require 'asyncawait'
 
 describe 'stamp', ->
+  proxy = null
   opts = _.extend config.oauth2, getToken: async ->
     await token opts
 
@@ -20,7 +21,7 @@ describe 'stamp', ->
     authApi async ->
       await validToken opts
 
-  it 'proxy', async ->
+  it 'proxy create', async ->
     Proxy = model config.proxy.url
       .use authApi async ->
         await validToken opts
@@ -29,3 +30,6 @@ describe 'stamp', ->
       prefix: '/test/'
       target: 'http://192.168.1.1'
     await proxy.save()
+
+  it 'proxy destroy', async ->
+    await proxy.destroy()
