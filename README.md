@@ -1,17 +1,17 @@
-# async-model
+# activerecord-model
 Async [ActiveRerord](https://bfanger.nl/angular-activerecord/api/#!/api/ActiveRecord) like [StampIT](https://github.com/stampit-org/stampit) Model for Rest API
 
 ## Install
 ```
-npm install async-model
+npm install activerecord-model
 ```
 
-## See [API](https://rawcdn.githack.com/twhtanghk/async-model/master/docs/index.html)
+## [API](https://rawcdn.githack.com/twhtanghk/activerecord-model/master/docs/index.html)
 
 ## Example
 ```
 {async, await} = require 'asyncawait'
-{token, validToken, authApi, model} = require 'async-model'
+{token, validToken, authApi, model} = require 'activerecord-model'
 
 async ->
   Proxy = model 'http://host/upstream'
