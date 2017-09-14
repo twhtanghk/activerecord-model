@@ -1,12 +1,15 @@
 _ = require 'lodash'
-{token, verify, validToken, authApi, model} = require '../index'
+{token, verify, validToken, authApi, model} = require '../index.litcoffee'
 config = require './config.coffee'
 {async, await} = require 'asyncawait'
 
 describe 'stamp', ->
-  proxy = null
   opts = _.extend config.oauth2, getToken: async ->
     await token opts
+  Proxy = model config.proxy.url
+    .use authApi async ->
+      await validToken opts
+  proxy = null
 
   it 'token', async ->
     await opts.getToken()
@@ -22,9 +25,6 @@ describe 'stamp', ->
       await validToken opts
 
   it 'proxy create', async ->
-    Proxy = model config.proxy.url
-      .use authApi async ->
-        await validToken opts
     proxy = new Proxy
       name: 'test'
       prefix: '/test/'
@@ -33,3 +33,7 @@ describe 'stamp', ->
 
   it 'proxy destroy', async ->
     await proxy.destroy()
+
+  it 'proxy fetchAll', async ->
+    i = await Proxy.fetchAll()
+    console.log i

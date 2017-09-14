@@ -115,22 +115,25 @@ getToken: async function to acquire token
 ```
 
     module.exports.authApi = (getToken) ->
-      opts = async ->
-        rejectUnauthorized: false 
-        headers:
-          Authorization: "Bearer #{await getToken()}"
+      token = async (opts) ->
+        ret =
+          rejectUnauthorized: false 
+          headers:
+            Authorization: "Bearer #{await getToken()}"
+        _.extend ret, opts
       api = module.exports.api()
       stampit()
         .compose api
         .statics
-          get: async (url, data) ->
-            await api.get url, await opts()
-          put: async (url, data) ->
-            await api.put url, data, await opts()
-          post: async (url, data) ->
-            await api.post url, data, await opts()
-          'delete': async (url) ->
-            await api.delete url, null, await opts()
+          get: async (url, data, opts) ->
+            opts = await token opts
+            await api.get url, opts
+          put: async (url, data, opts) ->
+            await api.put url, data, await token opts
+          post: async (url, data, opts) ->
+            await api.post url, data, await token opts
+          'delete': async (url, data, opts) ->
+            await api.delete url, null, await token opts
 
 function to return [ActiveRecord](https://bfanger.nl/angular-activerecord/api/#!/api/ActiveRecord) like class for REST API access
 ```
@@ -209,12 +212,13 @@ baseUrl: base url to access REST API
 
 - static method to generate url based on input id
 
-          url: (id = '.') ->
-            url = require 'url'
+          url: (id = '.', params = null) ->
+            URL = require 'url'
             path = require 'path'
-            ret = url.parse @baseUrl
-            ret.pathname = path.join ret.pathname, id
-            url.format ret
+            obj = URL.parse @baseUrl
+            obj.pathname = path.join obj.pathname, id
+            obj.query = params
+            URL.format obj
 
 - fetch object instance with input id from server
 
@@ -223,7 +227,23 @@ baseUrl: base url to access REST API
             props[@idAttribute] = id
             await @(props).fetch()
 
-- fetch all object instances from server
+- fetch all object instances from server and return async iterator
+```
+proxy.fetchAll().forEach (proxy) ->
+  console.log proxy
+```
 
-          fetchAll: async (data = null) ->
-            await @api.get stamp.url
+          fetchAll: async ->
+            skip = 0
+            done = false
+            while not done
+              data = await @api.get @url('.', skip: skip)
+              if Array.isArray data
+                data =
+                  count: data.length
+                  results: data
+              {count, results} = data
+              skip = skip + data.results.length
+              done = skip >= count
+              for i in data
+                yield i
