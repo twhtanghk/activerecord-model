@@ -1,9 +1,20 @@
     _ = require 'lodash'
     assert = require 'assert'
-    {async, await} = require 'asyncawait'
     Promise = require 'bluebird'
     stampit = require 'stampit'
     http = Promise.promisifyAll require 'needle'
+    co = require 'co'
+    promiseWhile = require('promise-while')(Promise)
+    promiseUntil = (cond, action) ->
+      first = true
+      skipFirst = ->
+        if first
+          first = false
+          return true
+        else
+          cond()
+      promiseWhile skipFirst, action
+
 
 acquire token for resource owner password credentials grant from oauth2 server
 ```
@@ -22,7 +33,7 @@ opts:
   ]
 ```
 
-    module.exports.token = async (opts) ->
+    module.exports.token = (opts) ->
       {url, client, user, scope} = opts
       opts =
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -38,7 +49,7 @@ opts:
       else
         data =
           grant_type: 'client_credentials'
-      {statusCode, statusMessage, body} = await module.exports.api().post url.token, data, opts
+      {statusCode, statusMessage, body} = yield module.exports.api().post url.token, data, opts
       assert statusCode == 200 and not body.error?, "#{statusMessage}: #{body}"
       body.access_token
 
@@ -54,18 +65,18 @@ opts:
   token: token to be verified
 ```
 
-    module.exports.verify = async (opts) ->
+    module.exports.verify = (opts) ->
       {url, scope, token} = opts
       opts =
         headers:
           Authorization: "Bearer #{token}"
-      {statusCode, statusMessage, body} = await module.exports.api().get(url.verify, null, opts)
+      {statusCode, statusMessage, body} = yield module.exports.api().get(url.verify, null, opts)
       assert statusCode == 200, "#{statusMessage}: #{body}"
       result = _.intersection scope, body.scope.split(' ')
       assert result.length == scope.length, "Unauthorizated access to #{scope}"
       body 
 
-async function to acquire token even if expired
+function to acquire token even if expired
 ```
 opts:
   getToken: function to acquire token
@@ -77,60 +88,68 @@ opts:
   ]
 ```
 
-    module.exports.validToken = async (opts) ->
-      {getToken, url, scope} = opts
-      token = null
-      while true
-        try
-          verified = await module.exports.verify _.extend(token: token, opts)
-          return token
-        catch err
-          token = await getToken()
-     
+    module.exports.validToken = (opts) ->
+      cond = ->
+        not opts.token
+      action = -> co ->
+        while true
+          try
+            {token, getToken, url, scope} = opts
+            verified = yield module.exports.verify opts
+            return opts.token
+          catch err
+            opts.token = yield getToken()
+      yield promiseUntil cond, action
+        .then ->
+          opts.token
+    
 function to return http class with methods get, put, post, delete overriden
 
     module.exports.api = ->
       stamp = stampit()
         .compose http
         .statics
-          get: async (url, data, opts = {}) ->
+          get: (url, data, opts = {}) ->
             if data?
               opts.headers ?= {}
               _.extend opts.headers,
                 'Content-Type': 'application/json'
                 'x-http-method-override': 'get'
-              await http.postAsync url, data, opts
+              yield http.postAsync url, data, opts
             else
-              await http.getAsync url, opts
-          put: async (url, data, opts) ->
-            await http.putAsync url, data, opts
-          post: async (url, data, opts) ->
-            await http.postAsync url, data, opts
-          'delete': async (url, data, opts) ->
-            await http.deleteAsync url, data, opts
+              yield http.getAsync url, opts
+          put: (url, data, opts) ->
+            yield http.putAsync url, data, opts
+          post: (url, data, opts) ->
+            yield http.postAsync url, data, opts
+          'delete': (url, data, opts) ->
+            yield http.deleteAsync url, data, opts
 
-function to return http class methods get, put, post, delete with oauth2 token acquried from oauth2 server
+function to return http class methods get, put, post, delete with oauth2 token acquried from function getToken
 ```
-getToken: async function to acquire token
+getToken: function to acquire token
 ```
 
     module.exports.authApi = (getToken) ->
-      opts = async ->
-        rejectUnauthorized: false 
-        headers:
-          Authorization: "Bearer #{await getToken()}"
+      token = (opts) ->
+        ret =
+          rejectUnauthorized: false 
+          headers:
+            Authorization: "Bearer #{yield getToken()}"
+        _.extend ret, opts
       api = module.exports.api()
       stampit()
         .compose api
         .statics
-          get: async (url, data) ->
-            await api.get url, await opts()
-          put: async (url, data) ->
-            await api.put url, data, await opts()
-          post: async (url, data) ->
-            await api.post url, data, await opts()
-          'delete': async (url) ->
-            await api.delete url, null, await opts()
+          get: (url, data, opts) ->
+            opts = yield token opts
+            yield api.get url, null, opts
+          put: (url, data, opts) ->
+            yield api.put url, data, yield token opts
+          post: (url, data, opts) ->
+            yield api.post url, data, yield token opts
+          'delete': (url, data, opts) ->
+            yield api.delete url, null, yield token opts
 
 function to return [ActiveRecord](https://bfanger.nl/angular-activerecord/api/#!/api/ActiveRecord) like class for REST API access
 ```
@@ -162,28 +181,28 @@ baseUrl: base url to access REST API
 
 - fetch object instance via REST API
 
-          fetch: async ->
-            res = await stamp.api.get stamp.url(@[@getStamp().idAttribute])
+          fetch: ->
+            res = yield stamp.api.get stamp.url(@[@getStamp().idAttribute])
             assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
             _.extend @, @parse res
 
 - save object instance and input values to server via REST API
 
-          save: async (values = {}) ->
+          save: (values = {}) ->
             _.extend @, values
             if @isNew()
-              res = await stamp.api.post stamp.url(), @
+              res = yield stamp.api.post stamp.url(), @
               assert res.statusCode == 201, "#{res.statusMessage}: #{res.body}"
               _.extend @, @parse res.body
             else
-              res = await stamp.api.put stamp.url(@[@getStamp().idAttribute]), @
+              res = yield stamp.api.put stamp.url(@[@getStamp().idAttribute]), @
               assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
               _.extend @, @parse res.body
 
 - delete object instance from server via REST API
 
           destroy: ->
-            res = await stamp.api.delete stamp.url(@[@getStamp().idAttribute])
+            res = yield stamp.api.delete stamp.url(@[@getStamp().idAttribute])
             assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
             @
 
@@ -209,21 +228,49 @@ baseUrl: base url to access REST API
 
 - static method to generate url based on input id
 
-          url: (id = '.') ->
-            url = require 'url'
+          url: (id = '.', params = null) ->
+            URL = require 'url'
             path = require 'path'
-            ret = url.parse @baseUrl
-            ret.pathname = path.join ret.pathname, id
-            url.format ret
+            obj = URL.parse @baseUrl
+            obj.pathname = path.join obj.pathname, id.toString()
+            obj.query = params
+            URL.format obj
 
 - fetch object instance with input id from server
 
-          fetchOne: async (id) ->
+          fetchOne: (id) ->
             props = {}
             props[@idAttribute] = id
-            await @(props).fetch()
+            yield @(props).fetch()
 
-- fetch all object instances from server
+- fetch all object instances from server and return iterator
+```
+co proxy.fetchAll()
+  .then (gen) ->
+    for i from gen()
+      console.log proxy
+```
 
-          fetchAll: async (data = null) ->
-            await @api.get stamp.url
+          fetchAll: ->
+            self = @
+            skip = 0
+            count = 0
+            results = []
+            cond = ->
+              skip < count
+            action = ->
+              co self.api.get self.url('.', skip: skip)
+                .then (res) ->
+                  assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
+                  {body} = res
+                  if Array.isArray body
+                    data =
+                      count: body.length
+                      results: body
+                    body = data
+                  skip = skip + count
+                  {count, results} = body
+            yield promiseUntil cond, action
+              .then -> ->
+                for i in results
+                  yield i
