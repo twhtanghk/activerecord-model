@@ -32,10 +32,20 @@
             
             <div class="content"><div class='highlight'><pre>_ = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
 assert = <span class="hljs-built_in">require</span> <span class="hljs-string">'assert'</span>
-{async, <span class="hljs-keyword">await</span>} = <span class="hljs-built_in">require</span> <span class="hljs-string">'asyncawait'</span>
 Promise = <span class="hljs-built_in">require</span> <span class="hljs-string">'bluebird'</span>
 stampit = <span class="hljs-built_in">require</span> <span class="hljs-string">'stampit'</span>
-http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span class="hljs-string">'needle'</span></pre></div></div>
+http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span class="hljs-string">'needle'</span>
+co = <span class="hljs-built_in">require</span> <span class="hljs-string">'co'</span>
+promiseWhile = <span class="hljs-built_in">require</span>(<span class="hljs-string">'promise-while'</span>)(Promise)
+<span class="hljs-function"><span class="hljs-title">promiseUntil</span> = <span class="hljs-params">(cond, action)</span> -&gt;</span>
+  first = <span class="hljs-literal">true</span>
+<span class="hljs-function">  <span class="hljs-title">skipFirst</span> = -&gt;</span>
+    <span class="hljs-keyword">if</span> first
+      first = <span class="hljs-literal">false</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">else</span>
+      cond()
+  promiseWhile skipFirst, action</pre></div></div>
             
         </li>
         
@@ -63,7 +73,7 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
 </code></pre>
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports.token = async (opts) -&gt;
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports.token = <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
   {url, client, user, scope} = opts
   opts =
     <span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/x-www-form-urlencoded'</span>
@@ -79,7 +89,7 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
   <span class="hljs-keyword">else</span>
     data =
       grant_type: <span class="hljs-string">'client_credentials'</span>
-  {statusCode, statusMessage, body} = <span class="hljs-keyword">await</span> <span class="hljs-built_in">module</span>.exports.api().post url.token, data, opts
+  {statusCode, statusMessage, body} = <span class="hljs-keyword">yield</span> <span class="hljs-built_in">module</span>.exports.api().post url.token, data, opts
   assert statusCode == <span class="hljs-number">200</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> body.error?, <span class="hljs-string">"<span class="hljs-subst">#{statusMessage}</span>: <span class="hljs-subst">#{body}</span>"</span>
   body.access_token</pre></div></div>
             
@@ -104,12 +114,12 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
 </code></pre>
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports.verify = async (opts) -&gt;
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports.verify = <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
   {url, scope, token} = opts
   opts =
     headers:
       Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{token}</span>"</span>
-  {statusCode, statusMessage, body} = <span class="hljs-keyword">await</span> <span class="hljs-built_in">module</span>.exports.api().get(url.verify, <span class="hljs-literal">null</span>, opts)
+  {statusCode, statusMessage, body} = <span class="hljs-keyword">yield</span> <span class="hljs-built_in">module</span>.exports.api().get(url.verify, <span class="hljs-literal">null</span>, opts)
   assert statusCode == <span class="hljs-number">200</span>, <span class="hljs-string">"<span class="hljs-subst">#{statusMessage}</span>: <span class="hljs-subst">#{body}</span>"</span>
   result = _.intersection scope, body.scope.split(<span class="hljs-string">' '</span>)
   assert result.length == scope.length, <span class="hljs-string">"Unauthorizated access to <span class="hljs-subst">#{scope}</span>"</span>
@@ -124,7 +134,7 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>async function to acquire token even if expired</p>
+              <p>function to acquire token even if expired</p>
 <pre><code>opts:
   getToken: function to acquire token
   url:
@@ -136,15 +146,20 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
 </code></pre>
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports.validToken = async (opts) -&gt;
-  {getToken, url, scope} = opts
-  token = <span class="hljs-literal">null</span>
-  <span class="hljs-keyword">while</span> <span class="hljs-literal">true</span>
-    <span class="hljs-keyword">try</span>
-      verified = <span class="hljs-keyword">await</span> <span class="hljs-built_in">module</span>.exports.verify _.extend(token: token, opts)
-      <span class="hljs-keyword">return</span> token
-    <span class="hljs-keyword">catch</span> err
-      token = <span class="hljs-keyword">await</span> getToken()</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports.validToken = <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
+<span class="hljs-function">  <span class="hljs-title">cond</span> = -&gt;</span>
+    <span class="hljs-keyword">not</span> opts.token
+<span class="hljs-function">  <span class="hljs-title">action</span> = -&gt;</span> co -&gt;
+    <span class="hljs-keyword">while</span> <span class="hljs-literal">true</span>
+      <span class="hljs-keyword">try</span>
+        {token, getToken, url, scope} = opts
+        verified = <span class="hljs-keyword">yield</span> <span class="hljs-built_in">module</span>.exports.verify opts
+        <span class="hljs-keyword">return</span> opts.token
+      <span class="hljs-keyword">catch</span> err
+        opts.token = <span class="hljs-keyword">yield</span> getToken()
+  <span class="hljs-keyword">yield</span> promiseUntil cond, action
+    .<span class="hljs-keyword">then</span> -&gt;
+      opts.token</pre></div></div>
             
         </li>
         
@@ -163,21 +178,21 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
   stamp = stampit()
     .compose http
     .statics
-      get: async (url, data, opts = {}) -&gt;
+      get: <span class="hljs-function"><span class="hljs-params">(url, data, opts = {})</span> -&gt;</span>
         <span class="hljs-keyword">if</span> data?
           opts.headers ?= {}
           _.extend opts.headers,
             <span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/json'</span>
             <span class="hljs-string">'x-http-method-override'</span>: <span class="hljs-string">'get'</span>
-          <span class="hljs-keyword">await</span> http.postAsync url, data, opts
+          <span class="hljs-keyword">yield</span> http.postAsync url, data, opts
         <span class="hljs-keyword">else</span>
-          <span class="hljs-keyword">await</span> http.getAsync url, opts
-      put: async (url, data, opts) -&gt;
-        <span class="hljs-keyword">await</span> http.putAsync url, data, opts
-      post: async (url, data, opts) -&gt;
-        <span class="hljs-keyword">await</span> http.postAsync url, data, opts
-      <span class="hljs-string">'delete'</span>: async (url, data, opts) -&gt;
-        <span class="hljs-keyword">await</span> http.deleteAsync url, data, opts</pre></div></div>
+          <span class="hljs-keyword">yield</span> http.getAsync url, opts
+      put: <span class="hljs-function"><span class="hljs-params">(url, data, opts)</span> -&gt;</span>
+        <span class="hljs-keyword">yield</span> http.putAsync url, data, opts
+      post: <span class="hljs-function"><span class="hljs-params">(url, data, opts)</span> -&gt;</span>
+        <span class="hljs-keyword">yield</span> http.postAsync url, data, opts
+      <span class="hljs-string">'delete'</span>: <span class="hljs-function"><span class="hljs-params">(url, data, opts)</span> -&gt;</span>
+        <span class="hljs-keyword">yield</span> http.deleteAsync url, data, opts</pre></div></div>
             
         </li>
         
@@ -188,28 +203,31 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>function to return http class methods get, put, post, delete with oauth2 token acquried from oauth2 server</p>
-<pre><code>getToken: async function to acquire token
+              <p>function to return http class methods get, put, post, delete with oauth2 token acquried from function getToken</p>
+<pre><code>getToken: function to acquire token
 </code></pre>
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports.authApi = <span class="hljs-function"><span class="hljs-params">(getToken)</span> -&gt;</span>
-  opts = async -&gt;
-    rejectUnauthorized: <span class="hljs-literal">false</span> 
-    headers:
-      Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{<span class="hljs-keyword">await</span> getToken()}</span>"</span>
+<span class="hljs-function">  <span class="hljs-title">token</span> = <span class="hljs-params">(opts)</span> -&gt;</span>
+    ret =
+      rejectUnauthorized: <span class="hljs-literal">false</span> 
+      headers:
+        Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{<span class="hljs-keyword">yield</span> getToken()}</span>"</span>
+    _.extend ret, opts
   api = <span class="hljs-built_in">module</span>.exports.api()
   stampit()
     .compose api
     .statics
-      get: async (url, data) -&gt;
-        <span class="hljs-keyword">await</span> api.get url, <span class="hljs-keyword">await</span> opts()
-      put: async (url, data) -&gt;
-        <span class="hljs-keyword">await</span> api.put url, data, <span class="hljs-keyword">await</span> opts()
-      post: async (url, data) -&gt;
-        <span class="hljs-keyword">await</span> api.post url, data, <span class="hljs-keyword">await</span> opts()
-      <span class="hljs-string">'delete'</span>: async (url) -&gt;
-        <span class="hljs-keyword">await</span> api.<span class="hljs-keyword">delete</span> url, <span class="hljs-literal">null</span>, <span class="hljs-keyword">await</span> opts()</pre></div></div>
+      get: <span class="hljs-function"><span class="hljs-params">(url, data, opts)</span> -&gt;</span>
+        opts = <span class="hljs-keyword">yield</span> token opts
+        <span class="hljs-keyword">yield</span> api.get url, <span class="hljs-literal">null</span>, opts
+      put: <span class="hljs-function"><span class="hljs-params">(url, data, opts)</span> -&gt;</span>
+        <span class="hljs-keyword">yield</span> api.put url, data, <span class="hljs-keyword">yield</span> token opts
+      post: <span class="hljs-function"><span class="hljs-params">(url, data, opts)</span> -&gt;</span>
+        <span class="hljs-keyword">yield</span> api.post url, data, <span class="hljs-keyword">yield</span> token opts
+      <span class="hljs-string">'delete'</span>: <span class="hljs-function"><span class="hljs-params">(url, data, opts)</span> -&gt;</span>
+        <span class="hljs-keyword">yield</span> api.<span class="hljs-keyword">delete</span> url, <span class="hljs-literal">null</span>, <span class="hljs-keyword">yield</span> token opts</pre></div></div>
             
         </li>
         
@@ -302,8 +320,8 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      fetch: async -&gt;
-        res = <span class="hljs-keyword">await</span> stamp.api.get stamp.url(@[@getStamp().idAttribute])
+            <div class="content"><div class='highlight'><pre>      fetch: <span class="hljs-function">-&gt;</span>
+        res = <span class="hljs-keyword">yield</span> stamp.api.get stamp.url(@[@getStamp().idAttribute])
         assert res.statusCode == <span class="hljs-number">200</span>, <span class="hljs-string">"<span class="hljs-subst">#{res.statusMessage}</span>: <span class="hljs-subst">#{res.body}</span>"</span>
         _.extend @, @parse res</pre></div></div>
             
@@ -322,14 +340,14 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      save: async (values = {}) -&gt;
+            <div class="content"><div class='highlight'><pre>      save: <span class="hljs-function"><span class="hljs-params">(values = {})</span> -&gt;</span>
         _.extend @, values
         <span class="hljs-keyword">if</span> @isNew()
-          res = <span class="hljs-keyword">await</span> stamp.api.post stamp.url(), @
+          res = <span class="hljs-keyword">yield</span> stamp.api.post stamp.url(), @
           assert res.statusCode == <span class="hljs-number">201</span>, <span class="hljs-string">"<span class="hljs-subst">#{res.statusMessage}</span>: <span class="hljs-subst">#{res.body}</span>"</span>
           _.extend @, @parse res.body
         <span class="hljs-keyword">else</span>
-          res = <span class="hljs-keyword">await</span> stamp.api.put stamp.url(@[@getStamp().idAttribute]), @
+          res = <span class="hljs-keyword">yield</span> stamp.api.put stamp.url(@[@getStamp().idAttribute]), @
           assert res.statusCode == <span class="hljs-number">200</span>, <span class="hljs-string">"<span class="hljs-subst">#{res.statusMessage}</span>: <span class="hljs-subst">#{res.body}</span>"</span>
           _.extend @, @parse res.body</pre></div></div>
             
@@ -349,7 +367,7 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
             </div>
             
             <div class="content"><div class='highlight'><pre>      destroy: <span class="hljs-function">-&gt;</span>
-        res = <span class="hljs-keyword">await</span> stamp.api.<span class="hljs-keyword">delete</span> stamp.url(@[@getStamp().idAttribute])
+        res = <span class="hljs-keyword">yield</span> stamp.api.<span class="hljs-keyword">delete</span> stamp.url(@[@getStamp().idAttribute])
         assert res.statusCode == <span class="hljs-number">200</span>, <span class="hljs-string">"<span class="hljs-subst">#{res.statusMessage}</span>: <span class="hljs-subst">#{res.body}</span>"</span>
         @
 
@@ -440,12 +458,13 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      url: <span class="hljs-function"><span class="hljs-params">(id = <span class="hljs-string">'.'</span>)</span> -&gt;</span>
-        url = <span class="hljs-built_in">require</span> <span class="hljs-string">'url'</span>
+            <div class="content"><div class='highlight'><pre>      url: <span class="hljs-function"><span class="hljs-params">(id = <span class="hljs-string">'.'</span>, params = <span class="hljs-literal">null</span>)</span> -&gt;</span>
+        URL = <span class="hljs-built_in">require</span> <span class="hljs-string">'url'</span>
         path = <span class="hljs-built_in">require</span> <span class="hljs-string">'path'</span>
-        ret = url.parse @baseUrl
-        ret.pathname = path.join ret.pathname, id
-        url.format ret</pre></div></div>
+        obj = URL.parse @baseUrl
+        obj.pathname = path.join obj.pathname, id.toString()
+        obj.query = params
+        URL.format obj</pre></div></div>
             
         </li>
         
@@ -462,10 +481,10 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      fetchOne: async (id) -&gt;
+            <div class="content"><div class='highlight'><pre>      fetchOne: <span class="hljs-function"><span class="hljs-params">(id)</span> -&gt;</span>
         props = {}
         props[@idAttribute] = id
-        <span class="hljs-keyword">await</span> @(props).fetch()</pre></div></div>
+        <span class="hljs-keyword">yield</span> @(props).fetch()</pre></div></div>
             
         </li>
         
@@ -477,13 +496,38 @@ http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span cla
                 <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <ul>
-<li>fetch all object instances from server</li>
+<li>fetch all object instances from server and return iterator<pre><code>co proxy.fetchAll()
+.<span class="hljs-keyword">then</span> (gen) -&gt;
+  <span class="hljs-keyword">for</span> i <span class="hljs-keyword">from</span> gen()
+    <span class="hljs-built_in">console</span>.log proxy
+</code></pre></li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      fetchAll: async (data = <span class="hljs-literal">null</span>) -&gt;
-        <span class="hljs-keyword">await</span> @api.get stamp.url</pre></div></div>
+            <div class="content"><div class='highlight'><pre>      fetchAll: <span class="hljs-function">-&gt;</span>
+        self = @
+        skip = <span class="hljs-number">0</span>
+        count = <span class="hljs-number">0</span>
+        results = []
+<span class="hljs-function">        <span class="hljs-title">cond</span> = -&gt;</span>
+          skip &lt; count
+<span class="hljs-function">        <span class="hljs-title">action</span> = -&gt;</span>
+          co self.api.get self.url(<span class="hljs-string">'.'</span>, skip: skip)
+            .<span class="hljs-keyword">then</span> (res) -&gt;
+              assert res.statusCode == <span class="hljs-number">200</span>, <span class="hljs-string">"<span class="hljs-subst">#{res.statusMessage}</span>: <span class="hljs-subst">#{res.body}</span>"</span>
+              {body} = res
+              <span class="hljs-keyword">if</span> Array.isArray body
+                data =
+                  count: body.length
+                  results: body
+                body = data
+              skip = skip + count
+              {count, results} = body
+        <span class="hljs-keyword">yield</span> promiseUntil cond, action
+          .<span class="hljs-keyword">then</span> -&gt; -&gt;
+            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> results
+              <span class="hljs-keyword">yield</span> i</pre></div></div>
             
         </li>
         

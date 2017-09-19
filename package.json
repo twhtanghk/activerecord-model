@@ -16,9 +16,11 @@
   },
   "dependencies": {
     "asyncawait": "^1.0.6",
+    "co": "^4.6.0",
     "coffee-script": "^1.12.7",
     "lodash": "^4.17.4",
     "needle": "^2.0.0",
+    "promise-while": "^1.0.1",
     "stampit": "^3.2.1"
   }
 }
