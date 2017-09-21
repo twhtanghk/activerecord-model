@@ -4,7 +4,7 @@
     stampit = require 'stampit'
     http = Promise.promisifyAll require 'needle'
     co = require 'co'
-    promiseWhile = require('promise-while')(Promise)
+    promiseWhile = require 'ya-promise-while'
     promiseUntil = (cond, action) ->
       first = true
       skipFirst = ->
@@ -239,7 +239,7 @@ params:
             URL = require 'url'
             path = require 'path'
             obj = URL.parse @baseUrl
-            obj.pathname = path.join obj.pathname, id.toString()
+            obj.pathname =  path.join obj.pathname, params.id.toString()
             obj.query = _.omit params, 'id'
             URL.format obj
 
@@ -266,7 +266,7 @@ co proxy.fetchAll()
             cond = ->
               skip < count
             action = ->
-              co self.api.get self.url(list, skip: skip)
+              co self.api.get self.url('list', skip: skip)
                 .then (res) ->
                   assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
                   {body} = res

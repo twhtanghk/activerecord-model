@@ -14,7 +14,7 @@
 
   co = require('co');
 
-  promiseWhile = require('promise-while')(Promise);
+  promiseWhile = require('ya-promise-while');
 
   promiseUntil = function(cond, action) {
     var first, skipFirst;
@@ -177,7 +177,9 @@
       },
       fetch: function*() {
         var res;
-        res = (yield stamp.api.get(stamp.url(this[this.getStamp().idAttribute])));
+        res = (yield stamp.api.get(stamp.url('read', {
+          id: this[this.getStamp().idAttribute]
+        })));
         assert(res.statusCode === 200, res.statusMessage + ": " + res.body);
         return _.extend(this, this.parse(res));
       },
@@ -188,18 +190,22 @@
         }
         _.extend(this, values);
         if (this.isNew()) {
-          res = (yield stamp.api.post(stamp.url(), this));
+          res = (yield stamp.api.post(stamp.url('create'), this));
           assert(res.statusCode === 201, res.statusMessage + ": " + res.body);
           return _.extend(this, this.parse(res.body));
         } else {
-          res = (yield stamp.api.put(stamp.url(this[this.getStamp().idAttribute]), this));
+          res = (yield stamp.api.put(stamp.url('update', {
+            id: this[this.getStamp().idAttribute]
+          }), this));
           assert(res.statusCode === 200, res.statusMessage + ": " + res.body);
           return _.extend(this, this.parse(res.body));
         }
       },
       destroy: function*() {
         var res;
-        res = (yield stamp.api["delete"](stamp.url(this[this.getStamp().idAttribute])));
+        res = (yield stamp.api["delete"](stamp.url('delete', {
+          id: this[this.getStamp().idAttribute]
+        })));
         assert(res.statusCode === 200, res.statusMessage + ": " + res.body);
         return this;
       }
@@ -211,19 +217,24 @@
         this.api = api;
         return this;
       },
-      url: function(id, params) {
+      url: function(method, params) {
         var URL, obj, path;
-        if (id == null) {
-          id = '.';
+        if (method == null) {
+          method = 'list';
         }
         if (params == null) {
-          params = null;
+          params = {
+            id: '.'
+          };
         }
+        _.defaults(params, {
+          id: '.'
+        });
         URL = require('url');
         path = require('path');
         obj = URL.parse(this.baseUrl);
-        obj.pathname = path.join(obj.pathname, id.toString());
-        obj.query = params;
+        obj.pathname = path.join(obj.pathname, params.id.toString());
+        obj.query = _.omit(params, 'id');
         return URL.format(obj);
       },
       fetchOne: function*(id) {
@@ -242,7 +253,7 @@
           return skip < count;
         };
         action = function() {
-          return co(self.api.get(self.url('.', {
+          return co(self.api.get(self.url('list', {
             skip: skip
           }))).then(function(res) {
             var body, data;
