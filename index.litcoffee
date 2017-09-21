@@ -182,7 +182,7 @@ baseUrl: base url to access REST API
 - fetch object instance via REST API
 
           fetch: ->
-            res = yield stamp.api.get stamp.url(@[@getStamp().idAttribute])
+            res = yield stamp.api.get stamp.url('read', id: @[@getStamp().idAttribute])
             assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
             _.extend @, @parse res
 
@@ -191,18 +191,18 @@ baseUrl: base url to access REST API
           save: (values = {}) ->
             _.extend @, values
             if @isNew()
-              res = yield stamp.api.post stamp.url(), @
+              res = yield stamp.api.post stamp.url('create'), @
               assert res.statusCode == 201, "#{res.statusMessage}: #{res.body}"
               _.extend @, @parse res.body
             else
-              res = yield stamp.api.put stamp.url(@[@getStamp().idAttribute]), @
+              res = yield stamp.api.put stamp.url('update', id: @[@getStamp().idAttribute]), @
               assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
               _.extend @, @parse res.body
 
 - delete object instance from server via REST API
 
           destroy: ->
-            res = yield stamp.api.delete stamp.url(@[@getStamp().idAttribute])
+            res = yield stamp.api.delete stamp.url('delete', id: @[@getStamp().idAttribute])
             assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
             @
 
@@ -226,14 +226,21 @@ baseUrl: base url to access REST API
             @api = api
             @
 
-- static method to generate url based on input id
+- static method to generate url based on input method and params
+```
+method: 'create', 'read', 'update', 'delete', or 'list'
+params:
+  id: id of object instance
+  ...
+```
 
-          url: (id = '.', params = null) ->
+          url: (method = 'list', params = {id: '.'}) ->
+            _.defaults params, id: '.'
             URL = require 'url'
             path = require 'path'
             obj = URL.parse @baseUrl
             obj.pathname = path.join obj.pathname, id.toString()
-            obj.query = params
+            obj.query = _.omit params, 'id'
             URL.format obj
 
 - fetch object instance with input id from server
@@ -259,7 +266,7 @@ co proxy.fetchAll()
             cond = ->
               skip < count
             action = ->
-              co self.api.get self.url('.', skip: skip)
+              co self.api.get self.url(list, skip: skip)
                 .then (res) ->
                   assert res.statusCode == 200, "#{res.statusMessage}: #{res.body}"
                   {body} = res
