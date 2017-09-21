@@ -4,7 +4,7 @@
   "description": "Async ActiveRecord like StampIT Model for Rest API",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*.coffee"
+    "test": "mocha test/unit/*.coffee"
   },
   "author": {
     "name": "Tommy Tang",
@@ -20,7 +20,7 @@
     "coffee-script": "^1.12.7",
     "lodash": "^4.17.4",
     "needle": "^2.0.0",
-    "promise-while": "^1.0.1",
-    "stampit": "^3.2.1"
+    "stampit": "^3.2.1",
+    "ya-promise-while": "^3.0.1"
   }
 }
