@@ -1,7 +1,7 @@
 _ = require 'lodash'
 Promise = require 'bluebird'
-{token, verify, validToken, api, authApi, model} = require '../index'
-config = require './config.coffee'
+{token, verify, validToken, api, authApi, model} = require '../../index'
+config = require '../config.coffee'
 co = require 'co'
 
 describe 'stamp', ->
