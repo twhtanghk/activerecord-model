@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>index.litcoffee</title>
+  <title>proxy.litcoffee</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -63,7 +63,7 @@
         
           <li id="title">
               <div class="annotation">
-                  <h1>index.litcoffee</h1>
+                  <h1>proxy.litcoffee</h1>
               </div>
           </li>
         
@@ -78,12 +78,9 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>_ = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
-_.defaults = <span class="hljs-built_in">require</span> <span class="hljs-string">'merge-defaults'</span>
-glob = <span class="hljs-built_in">require</span> <span class="hljs-string">'glob'</span>
-<span class="hljs-function">
-<span class="hljs-title">addConfig</span> = <span class="hljs-params">(cfg, file)</span> -&gt;</span>
-  _.defaults cfg, <span class="hljs-built_in">require</span> file</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports =
+
+  proxy:</pre></div></div>
             
         </li>
         
@@ -94,21 +91,29 @@ glob = <span class="hljs-built_in">require</span> <span class="hljs-string">'glo
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <ul>
-<li><a href="promise.html">promise</a></li>
-<li><a href="api.html">api</a></li>
-<li><a href="oauth2.html">oauth2</a></li>
-<li><a href="model.html">model</a></li>
-<li><a href="proxy.html">proxy</a></li>
-<li><a href="docker.html">docker</a></li>
-</ul>
+              <p>url to access api for http reverse proxy </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = <span class="hljs-built_in">global</span>.arModel = glob
-  .sync <span class="hljs-string">"./config/env/<span class="hljs-subst">#{process.env.NODE_ENV || <span class="hljs-string">'production'</span>}</span>.coffee"</span>
-  .concat glob.sync <span class="hljs-string">'./config/*.litcoffee'</span>
-  .reduce addConfig, {}</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    url: <span class="hljs-string">'https://abc.com/ustream'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>model to acccess http reverse proxy api</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    model: <span class="hljs-function">-&gt;</span>
+      stamp = arModel
+        .model arModel.proxy.url
+        .use arModel.api().use arModel.oauth2.getOpts</pre></div></div>
             
         </li>
         
