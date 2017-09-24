@@ -30,3 +30,6 @@ describe 'docker', ->
 
   it 'stop', ->
     co container.stop()
+
+  it 'fetch', ->
+    co container.fetch()
