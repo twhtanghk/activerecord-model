@@ -50,7 +50,7 @@ baseUrl: base url to access REST API
                 _.extend @, @parse res.body
               else
                 res = yield stamp.api.put stamp.url('update', _.pick(@, stamp.idAttribute)), @
-                stamp.api.ok res, 200
+                stamp.api.ok res, [200, 204]
                 _.extend @, @parse res.body
 
 - delete object instance from server via REST API
@@ -58,7 +58,7 @@ baseUrl: base url to access REST API
             destroy: ->
               stamp = @getStamp()
               res = yield stamp.api.delete stamp.url('delete', _.pick(@, stamp.idAttribute))
-              stamp.api.ok res, 200
+              stamp.api.ok res, [200, 204]
               @
 
           .statics
