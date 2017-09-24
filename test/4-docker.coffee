@@ -33,3 +33,6 @@ describe 'docker', ->
 
   it 'fetch', ->
     co container.fetch()
+
+  it 'delete', ->
+    co container.destroy()
