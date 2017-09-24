@@ -43,8 +43,10 @@ list of middleware for customizing http opts
 check if res is ok, throw error message with res.sttatuMessage and res.body
 
             ok: (res, code) ->
+              if not Array.isArray code 
+                code = [code]
               {statusCode, statusMessage, body} = res
-              assert statusCode == code and not body.error?, "#{statusMessage}: #{util.inspect body}"
+              assert statusCode in code and not body.error?, "#{statusMessage}: #{util.inspect body}"
 
 loop for all defined middleware for customizing input opts
 
