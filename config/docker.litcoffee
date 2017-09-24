@@ -25,7 +25,7 @@
                     when 'create', 'update', 'start', 'stop'
                       append model.url(method, params, idAttribute), method
                     when 'delete'
-                      model.url method, params
+                      model.url method, params, idAttribute
                     else # read or list
                       append model.url(method, params, idAttribute), 'json'
               .methods
