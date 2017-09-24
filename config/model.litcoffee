@@ -37,7 +37,7 @@ baseUrl: base url to access REST API
               stamp = @getStamp()
               res = yield stamp.api.get stamp.url('read', _.pick(@, stamp.idAttribute))
               stamp.api.ok res, 200
-              _.extend @, @parse res
+              _.extend @, @parse res.body
 
 - save object instance and input values to server via REST API
 
@@ -89,13 +89,13 @@ params:
   ...
 ```
 
-            url: (method = 'list', params = {}) ->
-              params[@idAttribute] ?= '.'
+            url: (method = 'list', params = {}, idAttribute = @idAttribute) ->
+              params[idAttribute] ?= '.'
               URL = require 'url'
               path = require 'path'
               obj = URL.parse @baseUrl
-              obj.pathname =  path.join obj.pathname, params[@idAttribute].toString()
-              obj.query = _.omit params, @idAttribute
+              obj.pathname =  path.join obj.pathname, params[idAttribute].toString()
+              obj.query = _.omit params, idAttribute
               URL.format obj
 
 - fetch object instance with input id from server

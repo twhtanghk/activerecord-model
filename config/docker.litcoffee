@@ -2,7 +2,7 @@
 
     module.exports =
       docker:
-        url: 'http://192.168.122.2:2375'
+        url: 'http://10.0.2.15:2375'
         model:
           container: ->
             model = arModel
@@ -13,7 +13,8 @@
             stamp = model
               .statics
                 idAttribute: 'Id'
-                url: (method = 'list', params = {id: '.'}) ->
+                url: (method = 'list', params = {}, idAttribute = @idAttribute) ->
+                  params[idAttribute] ?= '.'
                   append = (url, path) ->
                     URL = require 'url'
                     obj = URL.parse url
@@ -22,19 +23,19 @@
                     URL.format obj
                   switch method
                     when 'create', 'update', 'start', 'stop'
-                      append model.url(method, params), method
+                      append model.url(method, params, idAttribute), method
                     when 'delete'
                       model.url method, params
                     else # read or list
-                      append model.url(method, params), 'json'
+                      append model.url(method, params, idAttribute), 'json'
               .methods
                 getStamp: ->
                   stamp
                 start: ->
-                  res = yield stamp.api.post stamp.url 'start',
-                    id: @[stamp.idAttribute]
-                  stamp.api.ok res, 204
+                  res = yield model.api.post stamp.url 'start',
+                    _.pick @, stamp.idAttribute
+                  model.api.ok res, 204
                 stop: ->
-                  res = yield stamp.api.post stamp.url 'stop',
-                    id: @[stamp.idAttribute]
-                  stamp.api.ok res, 204
+                  res = yield model.api.post stamp.url 'stop',
+                    _.pick @, stamp.idAttribute
+                  model.api.ok res, 204
