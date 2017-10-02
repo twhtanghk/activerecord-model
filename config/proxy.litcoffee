@@ -4,7 +4,7 @@
 
 url to access api for http reverse proxy 
 
-        url: 'https://abc.com/ustream'
+        url: 'https://abc.com/upstream'
         
 model to acccess http reverse proxy api
 
