@@ -2,14 +2,17 @@
 
     module.exports =
       docker:
-        url: 'http://10.0.2.15:2375'
+        url: 'http://abc.com:2375'
         model:
           container: ->
             model = arModel
-              .model "#{module.exports.docker.url}/containers"
+              .model "#{arModel.docker.url}/containers"
             model = model
               .use model.api.use (opts) ->
-                _.extend headers: 'Content-Type' : 'application/json', opts
+                defaultOpts =
+                  headers:
+                    'Content-Type': 'application/json'
+                _.extend defaultOpts, opts
             stamp = model
               .statics
                 idAttribute: 'Id'
