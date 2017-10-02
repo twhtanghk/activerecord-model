@@ -1,4 +1,5 @@
 co = require 'co'
+Promise = require 'bluebird'
 require '../index'
 
 describe 'docker', ->
@@ -27,6 +28,8 @@ describe 'docker', ->
 
   it 'start', ->
     co container.start()
+      .then ->
+        Promise.delay 15000
 
   it 'stop', ->
     co container.stop()
