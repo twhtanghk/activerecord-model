@@ -1,6 +1,6 @@
 _ = require 'lodash'
 co = require 'co'
-{oauth2} = require '../index'
+{oauth2} = sails.config
 
 describe 'oauth2', ->
 

@@ -1,5 +1,4 @@
 co = require 'co'
-require '../index'
 
 describe 'proxy', ->
   Proxy = sails.config.proxy.model()

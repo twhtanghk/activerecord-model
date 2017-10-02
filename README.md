@@ -10,8 +10,9 @@ npm install activerecord-model
 
 ## Example
 ```
+require('activerecord-model')() # override sails.config.{api, oauth2, Promise, armodel, proxy, docker}
 {async, await} = require 'asyncawait'
-{token, validToken, authApi, model} = require 'activerecord-model'
+{token, validToken, authApi, model} = sails.config.oauth2
 
 async ->
   Proxy = model 'http://host/upstream'

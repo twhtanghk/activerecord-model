@@ -2,9 +2,6 @@
     _.defaults = require 'merge-defaults'
     glob = require 'glob'
 
-    addConfig = (cfg, file) ->
-      _.defaults cfg, require file
-
 - [promise](promise.html)
 - [api](api.html)
 - [oauth2](oauth2.html)
@@ -14,8 +11,17 @@
 
     global.sails ?= {}
     sails.config ?= {}
-    sails.config = glob
-      .sync "./config/env/#{process.env.NODE_ENV || 'production'}.coffee"
-      .concat glob.sync './config/*.litcoffee'
-      .reduce addConfig, sails.config
-    module.exports = sails.config
+     
+    module.exports = (list...) ->
+      if list.length == 0
+        list = [ "#{__dirname}/config/*.litcoffee" ]
+
+      addFile = (cfg, file) ->
+        _.defaults cfg, require file
+
+      addPattern = (cfg, pattern) ->
+        glob
+          .sync pattern
+          .reduce addFile, cfg
+
+      _.reduce list, addPattern, sails.config

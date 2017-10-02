@@ -1,6 +1,5 @@
 co = require 'co'
 Promise = require 'bluebird'
-require '../index'
 
 describe 'docker', ->
 

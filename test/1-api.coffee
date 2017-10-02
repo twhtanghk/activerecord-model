@@ -1,7 +1,7 @@
 co = require 'co'
 util = require 'util'
 assert = require 'assert'
-require '../index'
+require('../index') "#{__dirname}/../config/env/production.coffee", "#{__dirname}/../config/*.litcoffee"
 
 describe 'api', ->
 
@@ -21,10 +21,3 @@ describe 'api', ->
     {statusCode, statusMessage, body} = yield api().post url.token, data, opts
     assert statusCode == 200 and not body.error?, "#{statusMessage}: #{util.inspect body}"
     console.log body.access_token
-
-###
-  it 'get', ->
-    co api().get oauth2.url.token
-      .then (res) ->
-        console.log res
-###
