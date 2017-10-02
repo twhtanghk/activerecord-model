@@ -19,8 +19,9 @@
     "co": "^4.6.0",
     "coffee-script": "^1.12.7",
     "lodash": "^4.17.4",
+    "merge-defaults": "^0.2.1",
     "needle": "^2.0.0",
-    "promise-while": "^1.0.1",
-    "stampit": "^3.2.1"
+    "stampit": "^3.2.1",
+    "ya-promise-while": "^3.0.1"
   }
 }

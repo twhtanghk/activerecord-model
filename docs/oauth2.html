@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>oauth2.litcoffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="api.html">
+                  api.litcoffee
+                </a>
+              
+                
+                <a class="source" href="armodel.html">
+                  armodel.litcoffee
+                </a>
+              
+                
+                <a class="source" href="docker.html">
+                  docker.litcoffee
+                </a>
+              
+                
+                <a class="source" href="oauth2.html">
+                  oauth2.litcoffee
+                </a>
+              
+                
+                <a class="source" href="promise.html">
+                  promise.litcoffee
+                </a>
+              
+                
+                <a class="source" href="proxy.html">
+                  proxy.litcoffee
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>oauth2.litcoffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>_ = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
+assert = <span class="hljs-built_in">require</span> <span class="hljs-string">'assert'</span>
+util = <span class="hljs-built_in">require</span> <span class="hljs-string">'util'</span>
+co = <span class="hljs-built_in">require</span> <span class="hljs-string">'co'</span>
+
+<span class="hljs-built_in">module</span>.exports =
+  oauth2:
+    url:</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Authorization URL to seek user authorization</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      authorize: <span class="hljs-string">'https://abc.com/auth/oauth2/authorize/'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>URL for verifying token</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      verify: <span class="hljs-string">'https://abc.com/auth/oauth2/verify/'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>URL for acquiring token</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      token: <span class="hljs-string">'https://abc.com/auth/oauth2/token/'</span>
+
+    client:</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>client id for resource owner password credential grant or client credential grant</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      id: <span class="hljs-string">'client_id'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>client secret for resource owner password credential grant or client credential grant</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      secret: <span class="hljs-string">'client_secret'</span>
+
+    user:</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>user id for acquiring token via resource owner password credential grant</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      id: <span class="hljs-string">'user_id'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>user secret for acquireing token via resource owner password credential grant</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      secret: <span class="hljs-string">'user_secret'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>required scope for user to authorize or verifying token</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    scope: [
+      <span class="hljs-string">'User'</span>
+    ]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>acquire token for resource owner password credentials grant from oauth2 server</p>
+<pre><code>opts:
+  url: 
+    token: url to acquire token
+  client:
+    id: client id
+    secret: client secret
+  user:
+    user: user id
+    secret: user secret
+  scope: [
+    <span class="hljs-string">'User'</span>
+   ...
+  ]
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getToken: <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
+      {url, client, user, scope} = opts
+      opts =
+        <span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/x-www-form-urlencoded'</span>
+        username: client.id
+        password: client.secret
+      data = {}
+      <span class="hljs-keyword">if</span> user?
+        data =
+          grant_type: <span class="hljs-string">'password'</span>
+          username: user.id
+          password: user.secret
+          scope: scope.join(<span class="hljs-string">' '</span>)
+      <span class="hljs-keyword">else</span>
+        data =
+          grant_type: <span class="hljs-string">'client_credentials'</span>
+      api = sails.config.api()
+      res = <span class="hljs-keyword">yield</span> api.post url.token, data, opts
+      api.ok res, <span class="hljs-number">200</span>
+      res.body.access_token</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>verify token with input url</p>
+<pre><code>opts:
+  url:
+    verify: url to verify token
+  scope: [
+    <span class="hljs-string">'User'</span>
+    ...
+  ]
+  token: token to be verified
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    verify: <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
+      {url, scope, token} = opts
+      opts =
+        headers:
+          Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{token}</span>"</span>
+      api = sails.config.api()
+      res = <span class="hljs-keyword">yield</span> api.get(url.verify, <span class="hljs-literal">null</span>, opts)
+      api.ok res, <span class="hljs-number">200</span>
+      result = _.intersection scope, res.body.scope.split(<span class="hljs-string">' '</span>)
+      assert result.length == scope.length, <span class="hljs-string">"Unauthorizated access to <span class="hljs-subst">#{scope}</span>"</span>
+      res.body</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>function to acquire token even if expired</p>
+<pre><code>opts:
+  getToken: function to acquire token
+  url:
+    verify: url to verify token
+  scope: [
+    <span class="hljs-string">'User'</span>
+    ...
+  ]
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    validToken: <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
+<span class="hljs-function">      <span class="hljs-title">cond</span> = -&gt;</span>
+        <span class="hljs-keyword">not</span> opts.token
+<span class="hljs-function">      <span class="hljs-title">action</span> = -&gt;</span> co -&gt;
+        <span class="hljs-keyword">while</span> <span class="hljs-literal">true</span>
+          {token, getToken, url, scope} = opts
+          <span class="hljs-keyword">try</span>
+            verified = <span class="hljs-keyword">yield</span> <span class="hljs-built_in">module</span>.exports.oauth2.verify opts
+            <span class="hljs-keyword">return</span> opts.token
+          <span class="hljs-keyword">catch</span> err
+            opts.token = <span class="hljs-keyword">yield</span> getToken opts
+      <span class="hljs-keyword">yield</span> sails.config.Promise.<span class="hljs-keyword">until</span> cond, action
+        .<span class="hljs-keyword">then</span> -&gt;
+          opts.token</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>return customized opts with oauth2 bearer</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getOpts: <span class="hljs-function"><span class="hljs-params">(opts)</span> -&gt;</span>
+      ret =
+        rejectUnauthorized: <span class="hljs-literal">false</span>
+        headers:
+          Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{<span class="hljs-keyword">yield</span> <span class="hljs-built_in">module</span>.exports.oauth2.validToken sails.config.oauth2}</span>"</span>
+      _.extend ret, opts</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

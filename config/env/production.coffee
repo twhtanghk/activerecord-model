@@ -1,16 +1,17 @@
 module.exports =
   oauth2:
     url:
+      authorize: 'https://abc.com/auth/oauth2/authorize/'
       verify: 'https://abc.com/auth/oauth2/verify/'
       token: 'https://abc.com/auth/oauth2/token/'
     client:
-      id: 'client id'
-      secret: 'client secret'
+      id: 'client_id'
+      secret: 'client_secret'
     user:
-      id: 'user id'
-      secret: 'user secret'
+      id: 'user_id'
+      secret: 'user_secret'
     scope: [
       'User'
     ]
   proxy:
-    url: 'https://abc.com/upstream' # for testing only
+    url: 'https://abc.com/upstream'
