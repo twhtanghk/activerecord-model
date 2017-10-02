@@ -25,13 +25,13 @@
                 </a>
               
                 
-                <a class="source" href="docker.html">
-                  docker.litcoffee
+                <a class="source" href="armodel.html">
+                  armodel.litcoffee
                 </a>
               
                 
-                <a class="source" href="model.html">
-                  model.litcoffee
+                <a class="source" href="docker.html">
+                  docker.litcoffee
                 </a>
               
                 
@@ -47,11 +47,6 @@
                 
                 <a class="source" href="proxy.html">
                   proxy.litcoffee
-                </a>
-              
-                
-                <a class="source" href="index.html">
-                  index.litcoffee
                 </a>
               
             </div>
@@ -255,7 +250,7 @@ co = <span class="hljs-built_in">require</span> <span class="hljs-string">'co'</
       <span class="hljs-keyword">else</span>
         data =
           grant_type: <span class="hljs-string">'client_credentials'</span>
-      api = arModel.api()
+      api = sails.config.api()
       res = <span class="hljs-keyword">yield</span> api.post url.token, data, opts
       api.ok res, <span class="hljs-number">200</span>
       res.body.access_token</pre></div></div>
@@ -286,7 +281,7 @@ co = <span class="hljs-built_in">require</span> <span class="hljs-string">'co'</
       opts =
         headers:
           Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{token}</span>"</span>
-      api = arModel.api()
+      api = sails.config.api()
       res = <span class="hljs-keyword">yield</span> api.get(url.verify, <span class="hljs-literal">null</span>, opts)
       api.ok res, <span class="hljs-number">200</span>
       result = _.intersection scope, res.body.scope.split(<span class="hljs-string">' '</span>)
@@ -325,7 +320,7 @@ co = <span class="hljs-built_in">require</span> <span class="hljs-string">'co'</
             <span class="hljs-keyword">return</span> opts.token
           <span class="hljs-keyword">catch</span> err
             opts.token = <span class="hljs-keyword">yield</span> getToken opts
-      <span class="hljs-keyword">yield</span> arModel.Promise.<span class="hljs-keyword">until</span> cond, action
+      <span class="hljs-keyword">yield</span> sails.config.Promise.<span class="hljs-keyword">until</span> cond, action
         .<span class="hljs-keyword">then</span> -&gt;
           opts.token</pre></div></div>
             
@@ -346,7 +341,7 @@ co = <span class="hljs-built_in">require</span> <span class="hljs-string">'co'</
       ret =
         rejectUnauthorized: <span class="hljs-literal">false</span>
         headers:
-          Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{<span class="hljs-keyword">yield</span> <span class="hljs-built_in">module</span>.exports.oauth2.validToken arModel.oauth2}</span>"</span>
+          Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{<span class="hljs-keyword">yield</span> <span class="hljs-built_in">module</span>.exports.oauth2.validToken sails.config.oauth2}</span>"</span>
       _.extend ret, opts</pre></div></div>
             
         </li>

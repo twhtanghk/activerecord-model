@@ -8,11 +8,14 @@
 - [promise](promise.html)
 - [api](api.html)
 - [oauth2](oauth2.html)
-- [model](model.html)
+- [armodel](armodel.html)
 - [proxy](proxy.html)
 - [docker](docker.html)
 
-    module.exports = global.arModel = glob
+    global.sails ?= {}
+    sails.config ?= {}
+    sails.config = glob
       .sync "./config/env/#{process.env.NODE_ENV || 'production'}.coffee"
       .concat glob.sync './config/*.litcoffee'
-      .reduce addConfig, {}
+      .reduce addConfig, sails.config
+    module.exports = sails.config

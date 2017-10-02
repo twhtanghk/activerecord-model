@@ -9,7 +9,7 @@
 function to return http class with methods get, put, post, delete overriden
 
       api: ->
-        Promise = arModel.Promise
+        Promise = sails.config.Promise
         http = Promise.promisifyAll require 'needle'
         stamp = stampit()
 
@@ -67,7 +67,7 @@ customOpts = (opts) ->
   ret =
     rejectUnauthorized: false
     headers:
-      Authorization: "Bearer #{yield arModel.oauth2.validToken()}"
+      Authorization: "Bearer #{yield sails.config.oauth2.validToken()}"
     _.extend ret, opts
 ```
 

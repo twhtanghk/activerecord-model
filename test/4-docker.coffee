@@ -4,7 +4,7 @@ require '../index'
 
 describe 'docker', ->
 
-  Container = arModel.docker.model.container()
+  Container = sails.config.docker.model.container()
   container = null
 
   it 'list', ->

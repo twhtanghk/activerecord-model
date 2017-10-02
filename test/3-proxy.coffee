@@ -2,7 +2,7 @@ co = require 'co'
 require '../index'
 
 describe 'proxy', ->
-  Proxy = arModel.proxy.model()
+  Proxy = sails.config.proxy.model()
   proxy = null
 
   it 'create', ->

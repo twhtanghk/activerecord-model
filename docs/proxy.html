@@ -25,13 +25,13 @@
                 </a>
               
                 
-                <a class="source" href="docker.html">
-                  docker.litcoffee
+                <a class="source" href="armodel.html">
+                  armodel.litcoffee
                 </a>
               
                 
-                <a class="source" href="model.html">
-                  model.litcoffee
+                <a class="source" href="docker.html">
+                  docker.litcoffee
                 </a>
               
                 
@@ -47,11 +47,6 @@
                 
                 <a class="source" href="proxy.html">
                   proxy.litcoffee
-                </a>
-              
-                
-                <a class="source" href="index.html">
-                  index.litcoffee
                 </a>
               
             </div>
@@ -111,9 +106,9 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>    model: <span class="hljs-function">-&gt;</span>
-      stamp = arModel
-        .model arModel.proxy.url
-        .use arModel.api().use arModel.oauth2.getOpts</pre></div></div>
+      stamp = sails.config
+        .armodel sails.config.proxy.url
+        .use sails.config.api().use sails.config.oauth2.getOpts</pre></div></div>
             
         </li>
         

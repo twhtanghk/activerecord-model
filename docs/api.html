@@ -25,13 +25,13 @@
                 </a>
               
                 
-                <a class="source" href="docker.html">
-                  docker.litcoffee
+                <a class="source" href="armodel.html">
+                  armodel.litcoffee
                 </a>
               
                 
-                <a class="source" href="model.html">
-                  model.litcoffee
+                <a class="source" href="docker.html">
+                  docker.litcoffee
                 </a>
               
                 
@@ -47,11 +47,6 @@
                 
                 <a class="source" href="proxy.html">
                   proxy.litcoffee
-                </a>
-              
-                
-                <a class="source" href="index.html">
-                  index.litcoffee
                 </a>
               
             </div>
@@ -100,7 +95,7 @@ stampit = <span class="hljs-built_in">require</span> <span class="hljs-string">'
             </div>
             
             <div class="content"><div class='highlight'><pre>  api: <span class="hljs-function">-&gt;</span>
-    Promise = arModel.Promise
+    Promise = sails.config.Promise
     http = Promise.promisifyAll <span class="hljs-built_in">require</span> <span class="hljs-string">'needle'</span>
     stamp = stampit()
 
@@ -156,8 +151,10 @@ stampit = <span class="hljs-built_in">require</span> <span class="hljs-string">'
             </div>
             
             <div class="content"><div class='highlight'><pre>        ok: <span class="hljs-function"><span class="hljs-params">(res, code)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> Array.isArray code 
+            code = [code]
           {statusCode, statusMessage, body} = res
-          assert statusCode == code <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> body.error?, <span class="hljs-string">"<span class="hljs-subst">#{statusMessage}</span>: <span class="hljs-subst">#{util.inspect body}</span>"</span></pre></div></div>
+          assert statusCode <span class="hljs-keyword">in</span> code <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> body.error?, <span class="hljs-string">"<span class="hljs-subst">#{statusMessage}</span>: <span class="hljs-subst">#{util.inspect body}</span>"</span></pre></div></div>
             
         </li>
         
@@ -197,7 +194,7 @@ stampit = <span class="hljs-built_in">require</span> <span class="hljs-string">'
   ret =
     rejectUnauthorized: <span class="hljs-literal">false</span>
     headers:
-      Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{<span class="hljs-keyword">yield</span> arModel.oauth2.validToken()}</span>"</span>
+      Authorization: <span class="hljs-string">"Bearer <span class="hljs-subst">#{<span class="hljs-keyword">yield</span> sails.config.oauth2.validToken()}</span>"</span>
     _.extend ret, opts
 </code></pre>
             </div>

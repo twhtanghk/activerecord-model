@@ -25,13 +25,13 @@
                 </a>
               
                 
-                <a class="source" href="docker.html">
-                  docker.litcoffee
+                <a class="source" href="armodel.html">
+                  armodel.litcoffee
                 </a>
               
                 
-                <a class="source" href="model.html">
-                  model.litcoffee
+                <a class="source" href="docker.html">
+                  docker.litcoffee
                 </a>
               
                 
@@ -47,11 +47,6 @@
                 
                 <a class="source" href="proxy.html">
                   proxy.litcoffee
-                </a>
-              
-                
-                <a class="source" href="index.html">
-                  index.litcoffee
                 </a>
               
             </div>
@@ -82,18 +77,22 @@
 
 <span class="hljs-built_in">module</span>.exports =
   docker:
-    url: <span class="hljs-string">'http://192.168.122.2:2375'</span>
+    url: <span class="hljs-string">'http://abc.com:2375'</span>
     model:
       container: <span class="hljs-function">-&gt;</span>
-        model = arModel
-          .model <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-built_in">module</span>.exports.docker.url}</span>/containers"</span>
+        model = sails.config
+          .armodel <span class="hljs-string">"<span class="hljs-subst">#{sails.config.docker.url}</span>/containers"</span>
         model = model
           .use model.api.use (opts) -&gt;
-            _.extend headers: <span class="hljs-string">'Content-Type'</span> : <span class="hljs-string">'application/json'</span>, opts
+            defaultOpts =
+              headers:
+                <span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'application/json'</span>
+            _.extend defaultOpts, opts
         stamp = model
           .statics
             idAttribute: <span class="hljs-string">'Id'</span>
-            url: <span class="hljs-function"><span class="hljs-params">(method = <span class="hljs-string">'list'</span>, params = {id: <span class="hljs-string">'.'</span>})</span> -&gt;</span>
+            url: <span class="hljs-function"><span class="hljs-params">(method = <span class="hljs-string">'list'</span>, params = {}, idAttribute = @idAttribute)</span> -&gt;</span>
+              params[idAttribute] ?= <span class="hljs-string">'.'</span>
 <span class="hljs-function">              <span class="hljs-title">append</span> = <span class="hljs-params">(url, path)</span> -&gt;</span>
                 URL = <span class="hljs-built_in">require</span> <span class="hljs-string">'url'</span>
                 obj = URL.parse url
@@ -102,22 +101,22 @@
                 URL.format obj
               <span class="hljs-keyword">switch</span> method
                 <span class="hljs-keyword">when</span> <span class="hljs-string">'create'</span>, <span class="hljs-string">'update'</span>, <span class="hljs-string">'start'</span>, <span class="hljs-string">'stop'</span>
-                  append model.url(method, params), method
+                  append model.url(method, params, idAttribute), method
                 <span class="hljs-keyword">when</span> <span class="hljs-string">'delete'</span>
-                  model.url method, params
+                  model.url method, params, idAttribute
                 <span class="hljs-keyword">else</span> <span class="hljs-comment"># read or list</span>
-                  append model.url(method, params), <span class="hljs-string">'json'</span>
+                  append model.url(method, params, idAttribute), <span class="hljs-string">'json'</span>
           .methods
             getStamp: <span class="hljs-function">-&gt;</span>
               stamp
             start: <span class="hljs-function">-&gt;</span>
-              res = <span class="hljs-keyword">yield</span> stamp.api.post stamp.url <span class="hljs-string">'start'</span>,
-                id: @[stamp.idAttribute]
-              stamp.api.ok res, <span class="hljs-number">204</span>
+              res = <span class="hljs-keyword">yield</span> model.api.post stamp.url <span class="hljs-string">'start'</span>,
+                _.pick @, stamp.idAttribute
+              model.api.ok res, <span class="hljs-number">204</span>
             stop: <span class="hljs-function">-&gt;</span>
-              res = <span class="hljs-keyword">yield</span> stamp.api.post stamp.url <span class="hljs-string">'stop'</span>,
-                id: @[stamp.idAttribute]
-              stamp.api.ok res, <span class="hljs-number">204</span></pre></div></div>
+              res = <span class="hljs-keyword">yield</span> model.api.post stamp.url <span class="hljs-string">'stop'</span>,
+                _.pick @, stamp.idAttribute
+              model.api.ok res, <span class="hljs-number">204</span></pre></div></div>
             
         </li>
         

@@ -5,7 +5,7 @@ require '../index'
 
 describe 'api', ->
 
-  {api, oauth2} = arModel
+  {api, oauth2} = sails.config
 
   it 'post', -> co ->
     {url, client, user, scope} = oauth2

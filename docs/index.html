@@ -11,54 +11,6 @@
   <div id="container">
     <div id="background"></div>
     
-      <ul id="jump_to">
-        <li>
-          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
-          <a class="small" href="javascript:void(0);">+</a>
-          <div id="jump_wrapper">
-          <div id="jump_page_wrapper">
-            <div id="jump_page">
-              
-                
-                <a class="source" href="api.html">
-                  api.litcoffee
-                </a>
-              
-                
-                <a class="source" href="docker.html">
-                  docker.litcoffee
-                </a>
-              
-                
-                <a class="source" href="model.html">
-                  model.litcoffee
-                </a>
-              
-                
-                <a class="source" href="oauth2.html">
-                  oauth2.litcoffee
-                </a>
-              
-                
-                <a class="source" href="promise.html">
-                  promise.litcoffee
-                </a>
-              
-                
-                <a class="source" href="proxy.html">
-                  proxy.litcoffee
-                </a>
-              
-                
-                <a class="source" href="index.html">
-                  index.litcoffee
-                </a>
-              
-            </div>
-          </div>
-        </li>
-      </ul>
-    
     <ul class="sections">
         
           <li id="title">
@@ -98,17 +50,20 @@ glob = <span class="hljs-built_in">require</span> <span class="hljs-string">'glo
 <li><a href="promise.html">promise</a></li>
 <li><a href="api.html">api</a></li>
 <li><a href="oauth2.html">oauth2</a></li>
-<li><a href="model.html">model</a></li>
+<li><a href="armodel.html">armodel</a></li>
 <li><a href="proxy.html">proxy</a></li>
 <li><a href="docker.html">docker</a></li>
 </ul>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = <span class="hljs-built_in">global</span>.arModel = glob
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">global</span>.sails ?= {}
+sails.config ?= {}
+sails.config = glob
   .sync <span class="hljs-string">"./config/env/<span class="hljs-subst">#{process.env.NODE_ENV || <span class="hljs-string">'production'</span>}</span>.coffee"</span>
   .concat glob.sync <span class="hljs-string">'./config/*.litcoffee'</span>
-  .reduce addConfig, {}</pre></div></div>
+  .reduce addConfig, sails.config
+<span class="hljs-built_in">module</span>.exports = sails.config</pre></div></div>
             
         </li>
         

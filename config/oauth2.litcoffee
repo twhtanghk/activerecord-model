@@ -78,7 +78,7 @@ opts:
           else
             data =
               grant_type: 'client_credentials'
-          api = arModel.api()
+          api = sails.config.api()
           res = yield api.post url.token, data, opts
           api.ok res, 200
           res.body.access_token
@@ -100,7 +100,7 @@ opts:
           opts =
             headers:
               Authorization: "Bearer #{token}"
-          api = arModel.api()
+          api = sails.config.api()
           res = yield api.get(url.verify, null, opts)
           api.ok res, 200
           result = _.intersection scope, res.body.scope.split(' ')
@@ -130,7 +130,7 @@ opts:
                 return opts.token
               catch err
                 opts.token = yield getToken opts
-          yield arModel.Promise.until cond, action
+          yield sails.config.Promise.until cond, action
             .then ->
               opts.token
 
@@ -140,6 +140,6 @@ return customized opts with oauth2 bearer
           ret =
             rejectUnauthorized: false
             headers:
-              Authorization: "Bearer #{yield module.exports.oauth2.validToken arModel.oauth2}"
+              Authorization: "Bearer #{yield module.exports.oauth2.validToken sails.config.oauth2}"
           _.extend ret, opts
 

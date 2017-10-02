@@ -9,6 +9,6 @@ url to access api for http reverse proxy
 model to acccess http reverse proxy api
 
         model: ->
-          stamp = arModel
-            .model arModel.proxy.url
-            .use arModel.api().use arModel.oauth2.getOpts
+          stamp = sails.config
+            .armodel sails.config.proxy.url
+            .use sails.config.api().use sails.config.oauth2.getOpts

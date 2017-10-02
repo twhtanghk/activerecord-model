@@ -5,8 +5,8 @@
         url: 'http://abc.com:2375'
         model:
           container: ->
-            model = arModel
-              .model "#{arModel.docker.url}/containers"
+            model = sails.config
+              .armodel "#{sails.config.docker.url}/containers"
             model = model
               .use model.api.use (opts) ->
                 defaultOpts =
