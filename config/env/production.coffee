@@ -13,5 +13,9 @@ module.exports =
     scope: [
       'User'
     ]
+  vm:
+    url: 'http://abc.com/vm/api/vm'
   proxy:
     url: 'https://abc.com/upstream'
+  docker:
+    url: 'http://192.168.121.1:2375'
