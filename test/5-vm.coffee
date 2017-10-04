@@ -1,7 +1,10 @@
 co = require 'co'
 
 describe 'vm', ->
-  Vm = sails.config.vm.model()
+  Vm = null
+
+  before ->
+    Vm = sails.config.vm.model()
 
   it 'fetchAll', ->
     co Vm.fetchAll()

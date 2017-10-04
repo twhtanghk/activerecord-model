@@ -9,19 +9,15 @@
 - [proxy](proxy.html)
 - [docker](docker.html)
 
-    global.sails ?= {}
-    sails.config ?= {}
-     
-    module.exports = (list...) ->
-      if list.length == 0
-        list = [ "#{__dirname}/config/*.litcoffee" ]
+    list = [ "#{__dirname}/config/*.litcoffee" ]
 
-      addFile = (cfg, file) ->
-        _.defaults cfg, require file
+    addFile = (cfg, file) ->
+      _.defaults cfg, require file
 
-      addPattern = (cfg, pattern) ->
-        glob
-          .sync pattern
-          .reduce addFile, cfg
+    addPattern = (cfg, pattern) ->
+      glob
+        .sync pattern
+        .reduce addFile, cfg
 
-      _.reduce list, addPattern, sails.config
+    module.exports =
+      _.reduce list, addPattern, {}

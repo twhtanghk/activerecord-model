@@ -1,10 +1,13 @@
 _ = require 'lodash'
 co = require 'co'
-{oauth2} = sails.config
 
 describe 'oauth2', ->
 
+  oauth2 = null
   token = null
+
+  before ->
+    {oauth2} = sails.config
 
   it 'getToken', -> 
     co oauth2.getToken oauth2

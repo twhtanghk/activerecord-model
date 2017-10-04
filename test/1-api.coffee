@@ -1,11 +1,13 @@
 co = require 'co'
 util = require 'util'
 assert = require 'assert'
-require('../index') "#{__dirname}/../config/env/production.coffee", "#{__dirname}/../config/*.litcoffee"
 
 describe 'api', ->
+  api = null
+  oauth2 = null
 
-  {api, oauth2} = sails.config
+  before ->
+    {api, oauth2} = sails.config
 
   it 'post', -> co ->
     {url, client, user, scope} = oauth2

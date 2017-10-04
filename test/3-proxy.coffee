@@ -1,8 +1,11 @@
 co = require 'co'
 
 describe 'proxy', ->
-  Proxy = sails.config.proxy.model()
+  Proxy = null
   proxy = null
+
+  before ->
+    Proxy = sails.config.proxy.model()
 
   it 'create', ->
     proxy = new Proxy

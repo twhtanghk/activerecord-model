@@ -3,8 +3,11 @@ Promise = require 'bluebird'
 
 describe 'docker', ->
 
-  Container = sails.config.docker.model.container()
+  Container = null
   container = null
+
+  before ->
+    Container = sails.config.docker.model.container()
 
   it 'list', ->
     co Container.fetchAll()
