@@ -1,6 +1,6 @@
     _ = require 'lodash'
     co = require 'co'
-    util = require 'util'
+    assert = require 'assert'
     stampit = require 'stampit'
 
     module.exports =
