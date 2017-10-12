@@ -1,7 +1,6 @@
     _ = require 'lodash'
     co = require 'co'
     util = require 'util'
-    assert = require 'assert'
     stampit = require 'stampit'
 
     module.exports =
@@ -46,7 +45,7 @@ check if res is ok, throw error message with res.sttatuMessage and res.body
               if not Array.isArray code 
                 code = [code]
               {statusCode, statusMessage, body} = res
-              assert statusCode in code and not body.error?, "#{statusMessage}: #{util.inspect body}"
+              assert statusCode in code and not body.error?, "#{statusMessage}: #{body.toString()}"
 
 loop for all defined middleware for customizing input opts
 
