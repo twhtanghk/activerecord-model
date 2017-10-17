@@ -1,6 +1,6 @@
 {
   "name": "activerecord-model",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Async ActiveRecord like StampIT Model for Rest API",
   "main": "index.js",
   "scripts": {

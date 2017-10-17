@@ -107,13 +107,25 @@ params:
 
 - fetch all object instances from server and return iterator
 ```
-co proxy.fetchAll()
-  .then (gen) ->
-    for i from gen()
-      console.log proxy
+to override url or data with
+
+opts =
+  url: 'http://abc.com/api/model/full'
+  data:
+    createdBy: 'admin@abc.com'
+    ...
+
+Example:
+
+  co proxy.fetchAll()
+    .then (gen) ->
+      for i from gen()
+        console.log proxy
 ```
 
-            fetchAll: ->
+            fetchAll: (opts = {}) ->
+              {url, data} = opts
+              opts = _.omit opts, 'url', 'data'
               self = @
               skip = 0
               count = 0
@@ -121,7 +133,7 @@ co proxy.fetchAll()
               cond = ->
                 skip < count
               action = ->
-                co self.api.get self.url('list', skip: skip)
+                co self.api.get url || self.url('list', skip: skip), data, opts
                   .then (res) ->
                     self.api.ok res, 200
                     {body} = res
