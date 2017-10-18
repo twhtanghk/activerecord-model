@@ -4,6 +4,7 @@ module.exports =
       authorize: 'https://abc.com/auth/oauth2/authorize/'
       verify: 'https://abc.com/auth/oauth2/verify/'
       token: 'https://abc.com/auth/oauth2/token/'
+    grant_type: 'password'
     client:
       id: 'client_id'
       secret: 'client_secret'
@@ -13,8 +14,6 @@ module.exports =
     scope: [
       'User'
     ]
-  vm:
-    url: 'http://abc.com/vm/api/vm'
   proxy:
     url: 'https://abc.com/upstream'
   docker:
