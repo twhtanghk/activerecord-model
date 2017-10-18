@@ -4,7 +4,6 @@ co = require 'co'
 describe 'oauth2', ->
 
   oauth2 = null
-  token = null
 
   before ->
     {oauth2} = sails.config
@@ -17,6 +16,7 @@ describe 'oauth2', ->
 
   it 'verify token', ->
     co oauth2.verify _.pick(oauth2, 'url', 'scope', 'token')
+      .then console.log
 
   it 'verify null', ->
     co oauth2.verify _.pick(oauth2, 'url', 'scope')
