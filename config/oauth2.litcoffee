@@ -1,6 +1,5 @@
     _ = require 'lodash'
     assert = require 'assert'
-    util = require 'util'
     co = require 'co'
 
     module.exports =
@@ -18,6 +17,10 @@ URL for verifying token
 URL for acquiring token
 
           token: 'https://abc.com/auth/oauth2/token/'
+
+default grant_type for resource owner password crendential grant
+
+        grant_type: 'password'
 
         client:
 
@@ -63,21 +66,19 @@ opts:
 ```
 
         getToken: (opts) ->
-          {url, client, user, scope} = opts
+          {url, grant_type, client, user, scope} = opts
           opts =
             'Content-Type': 'application/x-www-form-urlencoded'
             username: client.id
             password: client.secret
           data = {}
-          if user?
-            data =
-              grant_type: 'password'
+          data =
+            grant_type: grant_type
+            scope: scope.join(' ')
+          if grant_type == 'password'
+            _.extend data,
               username: user.id
               password: user.secret
-              scope: scope.join(' ')
-          else
-            data =
-              grant_type: 'client_credentials'
           api = sails.config.api()
           res = yield api.post url.token, data, opts
           api.ok res, 200
