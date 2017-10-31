@@ -41,15 +41,16 @@ baseUrl: base url to access REST API
 
 - save object instance and input values to server via REST API
 
-            save: (values = {}) ->
+            save: (values = {}, opts = {}) ->
+              {url} = opts
               _.extend @, values
               stamp = @getStamp()
               if @isNew()
-                res = yield stamp.api.post stamp.url('create'), @
+                res = yield stamp.api.post url || stamp.url('create'), @, opts
                 stamp.api.ok res, 201
                 _.extend @, @parse res.body
               else
-                res = yield stamp.api.put stamp.url('update', _.pick(@, stamp.idAttribute)), @
+                res = yield stamp.api.put url || stamp.url('update', _.pick(@, stamp.idAttribute)), @, opts
                 stamp.api.ok res, [200, 204]
                 _.extend @, @parse res.body
 
