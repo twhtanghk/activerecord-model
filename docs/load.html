@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>load.litcoffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="api.html">
+                  api.litcoffee
+                </a>
+              
+                
+                <a class="source" href="armodel.html">
+                  armodel.litcoffee
+                </a>
+              
+                
+                <a class="source" href="docker.html">
+                  docker.litcoffee
+                </a>
+              
+                
+                <a class="source" href="load.html">
+                  load.litcoffee
+                </a>
+              
+                
+                <a class="source" href="oauth2.html">
+                  oauth2.litcoffee
+                </a>
+              
+                
+                <a class="source" href="promise.html">
+                  promise.litcoffee
+                </a>
+              
+                
+                <a class="source" href="proxy.html">
+                  proxy.litcoffee
+                </a>
+              
+                
+                <a class="source" href="index.html">
+                  index.litcoffee
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>load.litcoffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>_ = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
+_.defaults = <span class="hljs-built_in">require</span> <span class="hljs-string">'merge-defaults'</span>
+glob = <span class="hljs-built_in">require</span> <span class="hljs-string">'glob'</span>
+path = <span class="hljs-built_in">require</span> <span class="hljs-string">'path'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>merge configuration from file into cfg</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">addFile</span> = <span class="hljs-params">(cfg, file)</span> -&gt;</span>
+  _.defaults cfg, <span class="hljs-built_in">require</span> file</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>merge configuration from file pattern into cfg</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">addPattern</span> = <span class="hljs-params">(cfg, pattern)</span> -&gt;</span>
+  glob
+    .sync pattern
+    .reduce addFile, cfg</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>merge configuration from files config/env/prodcution.<em> and config/</em> under dir into cfg</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">load</span> = <span class="hljs-params">(cfg, dir)</span> -&gt;</span>
+    env = process.env.NODE_ENV || <span class="hljs-string">'production'</span>
+    list = [
+      <span class="hljs-string">"config/env/<span class="hljs-subst">#{env}</span>.litcoffee"</span>
+      <span class="hljs-string">"config/env/<span class="hljs-subst">#{env}</span>.coffee"</span>
+      <span class="hljs-string">"config/env/<span class="hljs-subst">#{env}</span>.js"</span>
+      <span class="hljs-string">"config/*.litcoffee"</span>
+      <span class="hljs-string">"config/*.coffee"</span>
+      <span class="hljs-string">"config/*.js"</span>
+    ]
+    list = list.map (file) -&gt;
+      path.join dir, file
+    list.reduce addPattern, cfg</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>load configuration from dir list</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = 
+  load: <span class="hljs-function"><span class="hljs-params">(dir...)</span> -&gt;</span>
+    dir.reduce load, {}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

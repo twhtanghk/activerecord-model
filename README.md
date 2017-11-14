@@ -10,22 +10,8 @@ npm install activerecord-model
 
 ## Example
 ```
-_ = require 'lodash'
-_.defaults = require 'merge-defaults'
-co = require 'co'
-
-global.sails = 
-  config: require './config/env/production.coffee'
-
-_.defaults sails.config, require 'activerecord-model'
-
-Proxy = sails.config
-  .armodel sails.config.proxy.url
-  .use sails.config.api().use sails.config.oauth2.getOpts
-proxy = new Proxy
-  name: 'test'
-  prefix: '/test/'
-  target: 'http://192.168.1.1'
-co proxy.save()
+config = require 'activerecord-model'
+#load config from ./test and .
+sails.config = config.load path.join(_dirname, 'test'), __dirname
 
 ```

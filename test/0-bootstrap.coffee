@@ -1,7 +1,7 @@
-_ = require 'lodash'
-_.defaults = require 'merge-defaults'
+path = require 'path'
+{load} = require '../index'
 
 before ->
   global.sails = {}
-  sails.config = require '../config/env/production.coffee'
-  _.defaults sails.config, require '../index'
+  sails.config = load __dirname, path.dirname(__dirname)
+  console.log sails.config

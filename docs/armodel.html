@@ -35,6 +35,11 @@
                 </a>
               
                 
+                <a class="source" href="load.html">
+                  load.litcoffee
+                </a>
+              
+                
                 <a class="source" href="oauth2.html">
                   oauth2.litcoffee
                 </a>
@@ -195,15 +200,16 @@ co = <span class="hljs-built_in">require</span> <span class="hljs-string">'co'</
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        save: <span class="hljs-function"><span class="hljs-params">(values = {})</span> -&gt;</span>
+            <div class="content"><div class='highlight'><pre>        save: <span class="hljs-function"><span class="hljs-params">(values = {}, opts = {})</span> -&gt;</span>
+          {url} = opts
           _.extend @, values
           stamp = @getStamp()
           <span class="hljs-keyword">if</span> @isNew()
-            res = <span class="hljs-keyword">yield</span> stamp.api.post stamp.url(<span class="hljs-string">'create'</span>), @
+            res = <span class="hljs-keyword">yield</span> stamp.api.post url || stamp.url(<span class="hljs-string">'create'</span>), @, opts
             stamp.api.ok res, <span class="hljs-number">201</span>
             _.extend @, @parse res.body
           <span class="hljs-keyword">else</span>
-            res = <span class="hljs-keyword">yield</span> stamp.api.put stamp.url(<span class="hljs-string">'update'</span>, _.pick(@, stamp.idAttribute)), @
+            res = <span class="hljs-keyword">yield</span> stamp.api.put url || stamp.url(<span class="hljs-string">'update'</span>, _.pick(@, stamp.idAttribute)), @, opts
             stamp.api.ok res, [<span class="hljs-number">200</span>, <span class="hljs-number">204</span>]
             _.extend @, @parse res.body</pre></div></div>
             
@@ -358,16 +364,27 @@ id: id <span class="hljs-keyword">of</span> object instance
                 <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <ul>
-<li>fetch all object instances from server and return iterator<pre><code>co proxy.fetchAll()
-.<span class="hljs-keyword">then</span> (gen) -&gt;
-  <span class="hljs-keyword">for</span> i <span class="hljs-keyword">from</span> gen()
-    <span class="hljs-built_in">console</span>.log proxy
-</code></pre></li>
+<li>fetch all object instances from server and return iterator
+```
+to override url or data with</li>
 </ul>
+<p>opts =
+  url: ‘<a href="http://abc.com/api/model/full">http://abc.com/api/model/full</a>‘
+  data:
+    createdBy: ‘admin@abc.com’
+    …</p>
+<p>Example:</p>
+<p>  co proxy.fetchAll()
+    .then (gen) -&gt;
+      for i from gen()
+        console.log proxy
+```</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        fetchAll: <span class="hljs-function">-&gt;</span>
+            <div class="content"><div class='highlight'><pre>        fetchAll: <span class="hljs-function"><span class="hljs-params">(opts = {})</span> -&gt;</span>
+          {url, data} = opts
+          opts = _.omit opts, <span class="hljs-string">'url'</span>, <span class="hljs-string">'data'</span>
           self = @
           skip = <span class="hljs-number">0</span>
           count = <span class="hljs-number">0</span>
@@ -375,15 +392,15 @@ id: id <span class="hljs-keyword">of</span> object instance
 <span class="hljs-function">          <span class="hljs-title">cond</span> = -&gt;</span>
             skip &lt; count
 <span class="hljs-function">          <span class="hljs-title">action</span> = -&gt;</span>
-            co self.api.get self.url(<span class="hljs-string">'list'</span>, skip: skip)
+            co self.api.get url || self.url(<span class="hljs-string">'list'</span>, skip: skip), data, opts
               .<span class="hljs-keyword">then</span> (res) -&gt;
                 self.api.ok res, <span class="hljs-number">200</span>
                 {body} = res
                 <span class="hljs-keyword">if</span> Array.isArray body
-                  data =
+                  _body =
                     count: body.length
                     results: body
-                  body = data
+                  body = _body
                 skip = skip + count
                 {count, results} = body
           <span class="hljs-keyword">yield</span> sails.config.Promise.<span class="hljs-keyword">until</span> cond, action

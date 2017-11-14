@@ -35,6 +35,11 @@
                 </a>
               
                 
+                <a class="source" href="load.html">
+                  load.litcoffee
+                </a>
+              
+                
                 <a class="source" href="oauth2.html">
                   oauth2.litcoffee
                 </a>
@@ -78,9 +83,7 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>_ = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
-_.defaults = <span class="hljs-built_in">require</span> <span class="hljs-string">'merge-defaults'</span>
-glob = <span class="hljs-built_in">require</span> <span class="hljs-string">'glob'</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>{load} = <span class="hljs-built_in">require</span> <span class="hljs-string">'./config/load.litcoffee'</span></pre></div></div>
             
         </li>
         
@@ -92,6 +95,7 @@ glob = <span class="hljs-built_in">require</span> <span class="hljs-string">'glo
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
               <ul>
+<li><a href="load.html">load</a></li>
 <li><a href="promise.html">promise</a></li>
 <li><a href="api.html">api</a></li>
 <li><a href="oauth2.html">oauth2</a></li>
@@ -102,22 +106,7 @@ glob = <span class="hljs-built_in">require</span> <span class="hljs-string">'glo
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">global</span>.sails ?= {}
-sails.config ?= {}
- 
-<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(list...)</span> -&gt;</span>
-  <span class="hljs-keyword">if</span> list.length == <span class="hljs-number">0</span>
-    list = [ <span class="hljs-string">"<span class="hljs-subst">#{__dirname}</span>/config/*.litcoffee"</span> ]
-<span class="hljs-function">
-  <span class="hljs-title">addFile</span> = <span class="hljs-params">(cfg, file)</span> -&gt;</span>
-    _.defaults cfg, <span class="hljs-built_in">require</span> file
-<span class="hljs-function">
-  <span class="hljs-title">addPattern</span> = <span class="hljs-params">(cfg, pattern)</span> -&gt;</span>
-    glob
-      .sync pattern
-      .reduce addFile, cfg
-
-  _.reduce list, addPattern, sails.config</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = load __dirname</pre></div></div>
             
         </li>
         

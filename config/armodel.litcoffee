@@ -139,10 +139,10 @@ Example:
                     self.api.ok res, 200
                     {body} = res
                     if Array.isArray body
-                      data =
+                      _body =
                         count: body.length
                         results: body
-                      body = data
+                      body = _body
                     skip = skip + count
                     {count, results} = body
               yield sails.config.Promise.until cond, action

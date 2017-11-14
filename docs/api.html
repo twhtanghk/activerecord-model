@@ -35,6 +35,11 @@
                 </a>
               
                 
+                <a class="source" href="load.html">
+                  load.litcoffee
+                </a>
+              
+                
                 <a class="source" href="oauth2.html">
                   oauth2.litcoffee
                 </a>
@@ -80,8 +85,8 @@
             
             <div class="content"><div class='highlight'><pre>_ = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
 co = <span class="hljs-built_in">require</span> <span class="hljs-string">'co'</span>
-util = <span class="hljs-built_in">require</span> <span class="hljs-string">'util'</span>
 assert = <span class="hljs-built_in">require</span> <span class="hljs-string">'assert'</span>
+util = <span class="hljs-built_in">require</span> <span class="hljs-string">'util'</span>
 stampit = <span class="hljs-built_in">require</span> <span class="hljs-string">'stampit'</span>
 
 <span class="hljs-built_in">module</span>.exports =</pre></div></div>
@@ -159,7 +164,7 @@ stampit = <span class="hljs-built_in">require</span> <span class="hljs-string">'
           <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> Array.isArray code 
             code = [code]
           {statusCode, statusMessage, body} = res
-          assert statusCode <span class="hljs-keyword">in</span> code <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> body.error?, <span class="hljs-string">"<span class="hljs-subst">#{statusMessage}</span>: <span class="hljs-subst">#{util.inspect body}</span>"</span></pre></div></div>
+          assert statusCode <span class="hljs-keyword">in</span> code, <span class="hljs-string">"<span class="hljs-subst">#{statusMessage}</span>: <span class="hljs-subst">#{<span class="hljs-keyword">if</span> body <span class="hljs-keyword">instanceof</span> Buffer <span class="hljs-keyword">then</span> body.toString() <span class="hljs-keyword">else</span> util.inspect body}</span>"</span></pre></div></div>
             
         </li>
         

@@ -17,8 +17,7 @@ describe 'proxy', ->
   it 'destroy', ->
     co proxy.destroy()
 
-  it 'fetchAll', ->
-    co Proxy.fetchAll()
-      .then (gen) ->
-        for i from gen()
-          console.log i
+  it 'fetchAll', -> co ->
+    gen = yield Proxy.fetchAll()
+    for i from gen()
+      console.log i
