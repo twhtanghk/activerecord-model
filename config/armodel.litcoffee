@@ -116,12 +116,10 @@ opts =
     createdBy: 'admin@abc.com'
     ...
 
-Example:
-
-  co proxy.fetchAll()
-    .then (gen) ->
-      for i from gen()
-        console.log proxy
+co proxy.fetchAll()
+  .then (gen) ->
+    for i from gen()
+      console.log proxy
 ```
 
             fetchAll: (opts = {}) ->
