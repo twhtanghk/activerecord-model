@@ -1,6 +1,6 @@
 {
   "name": "activerecord-model",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Async ActiveRecord like StampIT Model for Rest API",
   "main": "index.js",
   "scripts": {
@@ -12,12 +12,12 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "bluebird": "^3.5.2",
     "mocha": "^3.5.2"
   },
   "dependencies": {
-    "asyncawait": "^1.0.6",
     "co": "^4.6.0",
-    "coffee-script": "^1.12.7",
+    "coffeescript": "^2.3.2",
     "lodash": "^4.17.4",
     "merge-defaults": "^0.2.1",
     "needle": "^2.0.0",
